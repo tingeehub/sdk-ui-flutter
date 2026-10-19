@@ -1,0 +1,61 @@
+name: Publish to pub.dev
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          git status --porcelain
+
+      - name: Configure pub.dev Authentication
+        env:
+          PUB_CREDENTIALS_JSON: ${{ secrets.PUB_CREDENTIALS }}
+        run: |
+          if [ -n "$PUB_CREDENTIALS_JSON" ]; then
+            echo "Using PUB_CREDENTIALS secret..."
+            mkdir -p ~/.config/dart
+            mkdir -p ~/.pub-cache
+            echo "$PUB_CREDENTIALS_JSON" > ~/.config/dart/pub-credentials.json
+            echo "$PUB_CREDENTIALS_JSON" > ~/.pub-cache/credentials.json
+          else
+            echo "Using GitHub OIDC Token for pub.dev..."
+            OIDC_RESPONSE=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://pub.dev")
+            PUB_TOKEN=$(echo "$OIDC_RESPONSE" | jq -r '.value')
+            if [ -z "$PUB_TOKEN" ] || [ "$PUB_TOKEN" = "null" ]; then
+              echo "::error::Không lấy được OIDC token và cũng chưa cấu hình secret PUB_CREDENTIALS."
+              exit 1
+            fi
+            echo "::add-mask::$PUB_TOKEN"
+            export PUB_TOKEN
+            dart pub token add https://pub.dev --env-var=PUB_TOKEN
+          fi
+
+      - name: Publish to pub.dev
+        env:
+          PUB_TOKEN: ${{ env.PUB_TOKEN }}
+        run: |
+          if [ ! -f ~/.config/dart/pub-credentials.json ]; then
+            OIDC_RESPONSE=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://pub.dev")
+            export PUB_TOKEN=$(echo "$OIDC_RESPONSE" | jq -r '.value')
+            echo "::add-mask::$PUB_TOKEN"
+          fi
+          dart pub publish --force
