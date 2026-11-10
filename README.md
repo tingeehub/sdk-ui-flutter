@@ -45,15 +45,27 @@ class BankLinkPage extends StatelessWidget {
   const BankLinkPage({super.key});
 
   Future<void> _startBankLink(BuildContext context) async {
-    // 1. Gọi API Backend của bạn để lấy session URL
+    // 1. Gọi API Backend của bạn để lấy session URL và cấu hình màu sắc (nếu lưu ở Backend)
     const sessionUrl = 'https://bank-link.tingee.vn?token=...';
+    const primaryColorFromBackend = '#1E88E5';
 
-    // 2. Mở Modal Liên kết Ngân hàng và chờ kết quả trả về
+    // 2. Mở Modal Liên kết Ngân hàng kèm cấu hình động, customCss hoặc injectedJavaScript
     final result = await TingeeBankLink.open(
       context,
       url: sessionUrl,
       environment: TingeeEnvironment.prod,
-      theme: const TingeeThemeConfig(primaryColor: '#1E88E5'),
+      theme: const TingeeThemeConfig(
+        primaryColor: primaryColorFromBackend,
+        primaryHoverColor: '#1565C0',
+        primarySoftColor: '#E3F2FD',
+        cssVariables: {'--border-radius': '12px'},
+      ),
+      customCss: '''
+        body { font-family: -apple-system, sans-serif !important; }
+      ''',
+      injectedJavaScript: '''
+        console.log('Tingee Flutter WebView loaded');
+      ''',
       onSuccess: (res) {
         debugPrint('Liên kết thành công: ${res.bankName} - VA: ${res.vaAccountNumber}');
       },
@@ -140,9 +152,22 @@ Future<void> startPayment(BuildContext context, String checkoutUrl) async {
 }
 ```
 
+## 3. Tham số cấu hình (`TingeeBankLink.open` / `TingeeBankLinkView`)
+
+| Tham số | Kiểu dữ liệu | Mặc định | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `url` | `String` | *(bắt buộc)* | Đường dẫn session URL nhận từ API Backend. |
+| `environment` | `TingeeEnvironment` | `TingeeEnvironment.prod` | Môi trường tích hợp (`uat` hoặc `prod`). |
+| `theme` | `TingeeThemeConfig?` | `null` | Cấu hình màu sắc (`primaryColor`, `primaryHoverColor`, `primarySoftColor`, `cssVariables`, `customCss`). |
+| `customCss` | `String?` | `null` | Chuỗi CSS tùy chỉnh sâu được tiêm trực tiếp (`<style>`) vào trong WebView. |
+| `injectedJavaScript` | `String?` | `null` | Đoạn mã JavaScript tùy chỉnh được thực thi bên trong WebView sau khi tải trang. |
+| `title` | `String` | `'Liên kết ngân hàng'` | Tiêu đề thanh Header của Bottom Sheet Modal. |
+| `showHeader` | `bool` | `true` | Hiển thị thanh Header và nút đóng (`✕`). |
+| `enableDeepLink` | `bool` | `true` | Tự động mở App Ngân hàng khi bấm vào liên kết Deep Link. |
+
 ---
 
-## 3. Cấu trúc `TingeeResult`
+## 4. Cấu trúc `TingeeResult`
 
 | Thuộc tính | Kiểu dữ liệu | Mô tả |
 | :--- | :--- | :--- |

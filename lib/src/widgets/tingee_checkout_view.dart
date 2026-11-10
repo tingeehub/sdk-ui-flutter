@@ -19,6 +19,12 @@ class TingeeCheckoutView extends StatefulWidget {
   /// Cấu hình màu sắc chủ đạo của giao diện
   final TingeeThemeConfig? theme;
 
+  /// CSS tùy chỉnh sâu tiêm trực tiếp vào thẻ `<style>` trong WebView
+  final String? customCss;
+
+  /// Đoạn mã JavaScript tùy chỉnh được thực thi trong WebView sau khi tải trang
+  final String? injectedJavaScript;
+
   /// Chế độ hiển thị (`'embed'` hoặc `'modal'`). Mặc định: `'embed'`
   final String mode;
 
@@ -46,6 +52,8 @@ class TingeeCheckoutView extends StatefulWidget {
     this.environment = TingeeEnvironment.prod,
     this.baseUrl,
     this.theme,
+    this.customCss,
+    this.injectedJavaScript,
     this.mode = 'embed',
     this.enableDeepLink = true,
     this.showLoading = true,
@@ -83,6 +91,12 @@ class _TingeeCheckoutViewState extends State<TingeeCheckoutView> {
       theme: widget.theme,
     );
 
+    final fullBridgeScript = TingeeUrlUtils.buildWebViewBridgeScript(
+      theme: widget.theme,
+      customCss: widget.customCss,
+      injectedJavaScript: widget.injectedJavaScript,
+    );
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(false)
@@ -99,10 +113,10 @@ class _TingeeCheckoutViewState extends State<TingeeCheckoutView> {
             if (mounted) {
               setState(() => _isLoading = true);
             }
-            _controller.runJavaScript(TingeeUrlUtils.webViewBridgeScript);
+            _controller.runJavaScript(fullBridgeScript);
           },
           onPageFinished: (_) {
-            _controller.runJavaScript(TingeeUrlUtils.webViewBridgeScript);
+            _controller.runJavaScript(fullBridgeScript);
             if (mounted) {
               setState(() => _isLoading = false);
             }

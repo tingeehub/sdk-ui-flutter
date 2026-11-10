@@ -244,4 +244,90 @@ class TingeeUrlUtils {
   }, { passive: false });
 })();
 ''';
+
+  /// Tạo script hoàn chỉnh để tiêm vào WebView, kết hợp JS Bridge, chống zoom iOS,
+  /// biến CSS từ [theme], [customCss] và [injectedJavaScript].
+  static String buildWebViewBridgeScript({
+    TingeeThemeConfig? theme,
+    String? customCss,
+    String? injectedJavaScript,
+  }) {
+    final cssBuffer = StringBuffer();
+
+    if (theme != null) {
+      final vars = <String>[];
+      if (theme.primaryColor != null && theme.primaryColor!.isNotEmpty) {
+        vars.add(
+          '--primary-color: ${theme.primaryColor}; --tingee-primary: ${theme.primaryColor};',
+        );
+      }
+      if (theme.primaryHoverColor != null &&
+          theme.primaryHoverColor!.isNotEmpty) {
+        vars.add(
+          '--primary-hover-color: ${theme.primaryHoverColor}; --tingee-primary-hover: ${theme.primaryHoverColor};',
+        );
+      }
+      if (theme.primarySoftColor != null &&
+          theme.primarySoftColor!.isNotEmpty) {
+        vars.add(
+          '--primary-soft-color: ${theme.primarySoftColor}; --tingee-primary-soft: ${theme.primarySoftColor};',
+        );
+      }
+      if (theme.cssVariables != null) {
+        theme.cssVariables!.forEach((key, value) {
+          if (key.startsWith('--') && value.isNotEmpty) {
+            vars.add('$key: $value;');
+          }
+        });
+      }
+      if (vars.isNotEmpty) {
+        cssBuffer.writeln(':root { ${vars.join(' ')} }');
+      }
+      if (theme.customCss != null && theme.customCss!.trim().isNotEmpty) {
+        cssBuffer.writeln(theme.customCss!.trim());
+      }
+    }
+
+    if (customCss != null && customCss.trim().isNotEmpty) {
+      cssBuffer.writeln(customCss.trim());
+    }
+
+    final scriptBuffer = StringBuffer(webViewBridgeScript);
+
+    final cssRules = cssBuffer.toString().trim();
+    if (cssRules.isNotEmpty) {
+      final encodedCss = jsonEncode(cssRules);
+      scriptBuffer.writeln('''
+(function() {
+  function applyTingeeCustomCss() {
+    try {
+      if (!document || !document.head) return;
+      var styleEl = document.getElementById('__tingee_custom_css');
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = '__tingee_custom_css';
+        document.head.appendChild(styleEl);
+      }
+      styleEl.innerHTML = $encodedCss;
+    } catch (e) {}
+  }
+  applyTingeeCustomCss();
+  document.addEventListener('DOMContentLoaded', applyTingeeCustomCss);
+  window.addEventListener('load', applyTingeeCustomCss);
+})();
+''');
+    }
+
+    if (injectedJavaScript != null && injectedJavaScript.trim().isNotEmpty) {
+      scriptBuffer.writeln('''
+(function() {
+  try {
+    $injectedJavaScript
+  } catch (e) {}
+})();
+''');
+    }
+
+    return scriptBuffer.toString();
+  }
 }

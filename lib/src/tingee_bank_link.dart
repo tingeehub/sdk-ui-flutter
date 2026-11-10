@@ -14,6 +14,8 @@ class TingeeBankLink {
     TingeeEnvironment environment = TingeeEnvironment.prod,
     String? baseUrl,
     TingeeThemeConfig? theme,
+    String? customCss,
+    String? injectedJavaScript,
     String title = 'Liên kết ngân hàng',
     bool showHeader = true,
     bool enableDeepLink = true,
@@ -79,6 +81,8 @@ class TingeeBankLink {
                     environment: environment,
                     baseUrl: baseUrl,
                     theme: theme,
+                    customCss: customCss,
+                    injectedJavaScript: injectedJavaScript,
                     mode: 'modal',
                     enableDeepLink: enableDeepLink,
                     onResult: (res) {

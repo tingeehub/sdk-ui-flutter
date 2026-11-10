@@ -14,6 +14,8 @@ class TingeeCheckout {
     TingeeEnvironment environment = TingeeEnvironment.prod,
     String? baseUrl,
     TingeeThemeConfig? theme,
+    String? customCss,
+    String? injectedJavaScript,
     String title = 'Thanh toán Tingee',
     bool showHeader = true,
     bool enableDeepLink = true,
@@ -79,6 +81,8 @@ class TingeeCheckout {
                     environment: environment,
                     baseUrl: baseUrl,
                     theme: theme,
+                    customCss: customCss,
+                    injectedJavaScript: injectedJavaScript,
                     mode: 'modal',
                     enableDeepLink: enableDeepLink,
                     onResult: (res) {

@@ -1,6 +1,6 @@
 name: tingee_sdk_ui
 description: Bộ thư viện Tingee UI SDK chính thức cho Flutter (Android & iOS) — Tích hợp Liên kết Ngân hàng (Bank Link) & Cổng Thanh toán (Payment Gateway Checkout).
-version: 1.0.0-beta.1
+version: 1.0.0
 homepage: https://developers.tingee.vn
 repository: https://github.com/tingeehub/sdk-ui-flutter
 issue_tracker: https://github.com/tingeehub/sdk-ui-flutter/issues

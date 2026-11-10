@@ -22,16 +22,32 @@ enum TingeeStatus {
   error,
 }
 
-/// Cấu hình màu sắc chủ đạo cho giao diện Tingee
+/// Cấu hình màu sắc chủ đạo và giao diện nâng cao cho Tingee
 class TingeeThemeConfig {
   /// Mã màu HEX chủ đạo (ví dụ: `'#1E88E5'`)
   final String? primaryColor;
+
+  /// Mã màu HEX khi hover / nhấn nút
+  final String? primaryHoverColor;
+
+  /// Mã màu HEX nền nhẹ (soft background)
+  final String? primarySoftColor;
+
+  /// CSS tùy chỉnh sâu tiêm vào giao diện WebView
+  final String? customCss;
+
+  /// Các biến CSS tùy chỉnh (ví dụ: `{'--border-radius': '12px'}`)
+  final Map<String, String>? cssVariables;
 
   /// Các thuộc tính giao diện bổ sung (nếu có)
   final Map<String, dynamic>? extra;
 
   const TingeeThemeConfig({
     this.primaryColor,
+    this.primaryHoverColor,
+    this.primarySoftColor,
+    this.customCss,
+    this.cssVariables,
     this.extra,
   });
 
@@ -39,6 +55,12 @@ class TingeeThemeConfig {
     return {
       if (primaryColor != null && primaryColor!.isNotEmpty)
         'primaryColor': primaryColor,
+      if (primaryHoverColor != null && primaryHoverColor!.isNotEmpty)
+        'primaryHoverColor': primaryHoverColor,
+      if (primarySoftColor != null && primarySoftColor!.isNotEmpty)
+        'primarySoftColor': primarySoftColor,
+      if (customCss != null && customCss!.isNotEmpty) 'customCss': customCss,
+      if (cssVariables != null) ...cssVariables!,
       if (extra != null) ...extra!,
     };
   }
