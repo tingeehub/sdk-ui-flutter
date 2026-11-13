@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../models/tingee_models.dart';
 import '../utils/tingee_url_utils.dart';
+import '../utils/tingee_webview_media.dart';
 
 /// Widget nhúng trực tiếp giao diện Liên kết Ngân hàng (Tingee Bank Link) vào màn hình Flutter
 class TingeeBankLinkView extends StatefulWidget {
@@ -97,7 +98,8 @@ class _TingeeBankLinkViewState extends State<TingeeBankLinkView> {
       injectedJavaScript: widget.injectedJavaScript,
     );
 
-    _controller = WebViewController()
+    // Hỗ trợ quét QR bằng camera và tải ảnh QR từ thư viện
+    _controller = TingeeWebViewMedia.createController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(false)
       ..setBackgroundColor(Colors.white)

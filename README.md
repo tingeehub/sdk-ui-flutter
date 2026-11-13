@@ -12,7 +12,7 @@ Thêm `tingee_sdk_ui` vào `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  tingee_sdk_ui: ^1.0.0
+  tingee_sdk_ui: ^1.1.0
 ```
 
 Hoặc chạy lệnh:
@@ -20,6 +20,44 @@ Hoặc chạy lệnh:
 ```bash
 flutter pub add tingee_sdk_ui
 ```
+
+### Khai báo quyền Camera & Thư viện ảnh (bắt buộc)
+
+Giao diện Liên kết ngân hàng có tính năng **quét mã QR bằng camera** và **tải ảnh QR từ thư viện**. SDK đã tự xử lý xin quyền trong WebView, ứng dụng của bạn chỉ cần khai báo quyền:
+
+**iOS** — `ios/Runner/Info.plist` (thiếu `NSCameraUsageDescription` ứng dụng sẽ bị crash khi mở camera):
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Ứng dụng cần quyền camera để quét mã QR tài khoản ngân hàng.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Ứng dụng cần quyền truy cập thư viện ảnh để tải ảnh mã QR tài khoản ngân hàng.</string>
+```
+
+Và bật quyền camera cho `permission_handler` trong `ios/Podfile`:
+
+```ruby
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_CAMERA=1',
+      ]
+    end
+  end
+end
+```
+
+**Android** — `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+```
+
+> Chọn ảnh từ thư viện trên Android dùng Photo Picker của hệ thống (qua `image_picker`), không cần khai báo thêm quyền đọc bộ nhớ.
 
 ---
 
