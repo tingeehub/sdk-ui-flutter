@@ -1,3 +1,5 @@
+// Flutter stable mới deprecate material.dart (chuyển sang package material_ui); giữ lại để tương thích Flutter >= 3.10
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
