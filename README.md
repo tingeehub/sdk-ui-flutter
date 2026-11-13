@@ -21,11 +21,13 @@ Hoặc chạy lệnh:
 flutter pub add tingee_sdk_ui
 ```
 
-### Khai báo quyền Camera & Thư viện ảnh (bắt buộc)
+### Khai báo quyền Camera & Thư viện ảnh (tùy chọn — chỉ khi dùng tính năng quét QR)
 
-Giao diện Liên kết ngân hàng có tính năng **quét mã QR bằng camera** và **tải ảnh QR từ thư viện**. SDK đã tự xử lý xin quyền trong WebView, ứng dụng của bạn chỉ cần khai báo quyền:
+> Chỉ cần khai báo khi phiên liên kết của bạn **bật tính năng quét mã QR** (quét bằng camera / tải ảnh QR từ thư viện). Nếu không sử dụng tính năng này, nút quét QR sẽ không hiển thị và ứng dụng **không cần** khai báo các quyền bên dưới.
 
-**iOS** — `ios/Runner/Info.plist` (thiếu `NSCameraUsageDescription` ứng dụng sẽ bị crash khi mở camera):
+Khi dùng tính năng quét QR, SDK đã tự xử lý xin quyền trong WebView, ứng dụng của bạn chỉ cần khai báo quyền:
+
+**iOS** — `ios/Runner/Info.plist` (khi đã bật quét QR mà thiếu `NSCameraUsageDescription`, ứng dụng sẽ bị crash lúc mở camera):
 
 ```xml
 <key>NSCameraUsageDescription</key>

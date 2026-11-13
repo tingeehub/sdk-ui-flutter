@@ -6,7 +6,7 @@
   - Android: xin quyền `CAMERA` lúc chạy khi trang yêu cầu camera, mở bộ chọn ảnh cho `<input type="file">`, cho phép phát video không cần chạm.
   - iOS: bật `allowsInlineMediaPlayback`, phát video không cần chạm, cấp quyền camera cho WebView.
 - Thêm phụ thuộc `webview_flutter_android`, `webview_flutter_wkwebview`, `image_picker`, `permission_handler`.
-- **Ứng dụng tích hợp cần khai báo quyền camera / thư viện ảnh** — xem mục "Khai báo quyền Camera & Thư viện ảnh" trong README.
+- Nếu sử dụng tính năng quét QR, ứng dụng tích hợp cần khai báo quyền camera / thư viện ảnh (tùy chọn, không dùng quét QR thì không cần) — xem mục "Khai báo quyền Camera & Thư viện ảnh" trong README.
 
 ## 1.0.0
 
